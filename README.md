@@ -8,7 +8,7 @@ Training and validating models for semantic segmentation require datasets with p
 Our codes operate on ["Grounded-Segment-Anything"](https://github.com/IDEA-Research/Grounded-Segment-Anything). We solve the problem of multi-classes in object detection by giving each object the most likely as a pseudo-label, i.e., we just ignore the text threshold.
 
 ## Active Label Correction
-Temp
+Our codes are based on ["DeepLabV3Plus-Pytorch"](https://github.com/VainF/DeepLabV3Plus-Pytorch). Active learning generally follows these steps: (1) training the model (main.py, voc.sh), (2) selecting samples through acquisition (soft_label.py, acq_on_sam.py), and (3) labeling process (gen_masks_with_acq.py).
 
 ## Cite
 Please cite our paper if you use the model or this code in your own work:
