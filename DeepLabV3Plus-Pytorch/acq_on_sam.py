@@ -10,11 +10,11 @@ from scipy.special import softmax
 from scipy.spatial.distance import cosine
 
 
-# Thres, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0
 thres = 0.0
-soft_label_path = '/hdd/hdd2/khy/icml24/soft_label/vocrandpsam6k2/'
-spx_root_path = '/hdd/hdd4/khy/Grounded-Segment-Anything/outputs/0.2/obj_jpg/'
-n_label_root_path = '/hdd/hdd4/khy/DeepLabV3Plus-Pytorch/masks/voc_rand_p_sam_2/6000/sim_dic_00_/'
+soft_label_path = '/hdd/hdd2/khy/temp/active-label-correction/DeepLabV3Plus-Pytorch/soft_label/'
+spx_root_path = '/hdd/hdd2/khy/temp/active-label-correction/Grounded-Segment-Anything/outputs_voc/0.2/obj_jpg/'
+n_label_root_path = '/hdd/hdd2/khy/temp/active-label-correction/Grounded-Segment-Anything/outputs_voc/0.2/mask_jpg/'
+save_path = '/hdd/hdd2/khy/temp/active-label-correction/DeepLabV3Plus-Pytorch/acquisition/'
 
 imageset_path = '/data/datasets/VOCdevkit/VOC2012/ImageSets/Segmentation/train.txt'
 with open(imageset_path, 'r') as f:
@@ -101,13 +101,13 @@ def acq(image_name):
         sim = np.sum(cil_arr * sim_alpha)
         sim_dic[key] = (sim, cos_idx, cos_idy)
 
-        save_path = '/hdd/hdd2/khy/icml24/acquisition/vocrandpsam6k2/' + image_name + '/'
-        os.makedirs(save_path, exist_ok=True)
-        with open(save_path + 'cil_pixel.pkl', 'wb') as file:
+        save_path_each = save_path + image_name + '/'
+        os.makedirs(save_path_each, exist_ok=True)
+        with open(save_path_each + 'cil_pixel.pkl', 'wb') as file:
             pickle.dump(cil_pixel, file)
-        with open(save_path + 'cil_dic_' + str(thres) + '_.pkl', 'wb') as file:
+        with open(save_path_each + 'cil_dic_' + str(thres) + '_.pkl', 'wb') as file:
             pickle.dump(cil_dic, file)
-        with open(save_path + 'sim_dic_' + str(thres) + '_.pkl', 'wb') as file:
+        with open(save_path_each + 'sim_dic_' + str(thres) + '_.pkl', 'wb') as file:
             pickle.dump(sim_dic, file)
 
 
@@ -125,3 +125,30 @@ if __name__ == '__main__':
         if len(process) >= max_cpu_num:
             process[0].join()
             process.pop(0)
+
+    image_name_path = {}
+    for image_name in image_list:
+        pkl_path = os.path.join(save_path, image_name)
+        image_name_path[image_name] = pkl_path
+
+    cil_pixel, cil_dic = {}, {}
+    sim_dic = {}
+    for idx, image_name in enumerate(image_name_path.keys()):
+        print(idx, image_name)
+        pkl_path = image_name_path[image_name] + '/'
+        
+        each_cil_pixel = np.load(pkl_path + 'cil_pixel.pkl', allow_pickle=True)
+        each_cil_dic = np.load(pkl_path + 'cil_dic_0.0_.pkl', allow_pickle=True)
+        each_sim_dic = np.load(pkl_path + 'sim_dic_0.0_.pkl', allow_pickle=True)
+
+        cil_pixel.update(each_cil_pixel)
+        cil_dic.update(each_cil_dic)
+        sim_dic.update(each_sim_dic)
+
+    os.makedirs(save_path, exist_ok=True)
+    with open(save_path + 'cil_pixel.pkl', 'wb') as file:
+        pickle.dump(cil_pixel, file)
+    with open(save_path + 'cil_dic_' + str(thres) + '_.pkl', 'wb') as file:
+        pickle.dump(cil_dic, file)
+    with open(save_path + 'sim_dic_' + str(thres) + '_.pkl', 'wb') as file:
+        pickle.dump(sim_dic, file)

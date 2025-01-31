@@ -72,7 +72,7 @@ def get_argparser():
                         help="random seed (default: 1)")
     parser.add_argument("--print_interval", type=int, default=10,
                         help="print interval of loss (default: 10)")
-    parser.add_argument("--val_interval", type=int, default=100,
+    parser.add_argument("--val_interval", type=int, default=1000,
                         help="epoch interval for eval (default: 100)")
     parser.add_argument("--download", action='store_true', default=False,
                         help="download datasets")
@@ -365,6 +365,9 @@ def main():
                     best_score = val_score['Mean IoU']
                     save_ckpt('checkpoints/best_%s_%s_%s.pth' %
                           (opts.model, opts.dataset, opts.random_seed))
+                    
+                    if not os.path.exists('results'):
+                        os.mkdir('results')
                     metrics.to_save(val_score, opts.save)
 
                 if vis is not None:  # visualize validation score and samples

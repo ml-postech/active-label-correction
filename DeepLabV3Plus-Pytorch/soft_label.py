@@ -38,9 +38,9 @@ def get_argparser():
 
     # Train Options
     parser.add_argument("--crop_size", type=int, default=513)
-    parser.add_argument("--ckpt", default='./checkpoints/best_deeplabv3plus_resnet101_vocrandseeds15k_2.pth', type=str,
+    parser.add_argument("--ckpt", default='./checkpoints/best_deeplabv3plus_resnet101_voc_1.pth', type=str,
                         help="restore from checkpoint")
-    parser.add_argument("--gpu_id", type=str, default='2',
+    parser.add_argument("--gpu_id", type=str, default='0',
                         help="GPU ID")
     return parser
 
@@ -62,10 +62,10 @@ def acquisition(model, args):
     devkit_path = '/data/datasets/VOCdevkit/'
     image_root_path = devkit_path + 'VOC2012/JPEGImages'
 
-    label_root_path = '/hdd/hdd4/khy/Grounded-Segment-Anything/outputs/0.2/mask_jpg/'
-    spx_root_path = '/hdd/hdd4/khy/Grounded-Segment-Anything/outputs/0.2/obj_jpg/'
+    label_root_path = '/hdd/hdd2/khy/temp/active-label-correction/Grounded-Segment-Anything/outputs_voc/0.2/mask_jpg/'
+    spx_root_path = '/hdd/hdd2/khy/temp/active-label-correction/Grounded-Segment-Anything/outputs_voc/0.2/obj_jpg/'
     
-    save_path = '/hdd/hdd2/khy/icml24/soft_label/temp/'
+    save_path = '/hdd/hdd2/khy/temp/active-label-correction/DeepLabV3Plus-Pytorch/soft_label/'
     os.makedirs(save_path, exist_ok=True)
 
     imageset_path = devkit_path + 'VOC2012/ImageSets/Segmentation/train.txt'
